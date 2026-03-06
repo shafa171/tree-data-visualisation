@@ -1,1 +1,66 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  color: #222;
+}
 
+h1 {
+  margin-bottom: 20px;
+}
+
+.controls {
+  display: inline-block;
+  padding: 14px 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  background: #f9f9f9;
+}
+
+.control-group {
+  margin-bottom: 10px;
+}
+
+.control-group:last-child {
+  margin-bottom: 0;
+}
+
+.control-group label {
+  margin-right: 14px;
+}
+
+.viz-section {
+  margin-top: 10px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Dendrogram styles */
+.link {
+  fill: none;
+  stroke: #777;
+  stroke-opacity: 0.7;
+  stroke-width: 1.5px;
+}
+
+.node circle {
+  fill: #666;
+}
+
+.node text {
+  font-size: 12px;
+}
+
+/* Treemap styles */
+.treemap-node rect {
+  stroke: white;
+  stroke-width: 2px;
+}
+
+.treemap-node text {
+  font-size: 12px;
+  pointer-events: none;
+  fill: black;
+}
