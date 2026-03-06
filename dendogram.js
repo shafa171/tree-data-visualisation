@@ -13,6 +13,9 @@ const dSvg = d3.select("#dendrogramSvg")
   .attr("width", dWidth)
   .attr("height", dHeight);
 
+// Clear anything old just in case.
+dSvg.selectAll("*").remove();
+
 // Add a group inside the SVG so the graph has some margin.
 const dGroup = dSvg.append("g")
   .attr("transform", "translate(100,40)");
@@ -21,27 +24,29 @@ const dGroup = dSvg.append("g")
 const clusterLayout = d3.cluster()
   .size([dHeight - 80, dWidth - 300]);
 
-// Load the CSV file.
-// The CSV contains dot-separated IDs such as:
-// Books.Children's Books.Age 3-5.ABCs
-d3.csv("flare.csv").then(function(data) {
+d3.csv("./flare.csv").then(function(data) {
+  console.log("Raw dendrogram CSV:", data);
 
-  // d3.stratify converts the flat CSV rows into a hierarchy.
-  // Each row has an id. The parent is everything before the last dot.
+  // Remove blank or broken rows.
+  data = data.filter(d => d.id && d.id.trim() !== "");
+
+  console.log("Filtered dendrogram CSV:", data);
+
   const stratify = d3.stratify()
-    .id(d => d.id)
+    .id(d => d.id.trim())
     .parentId(d => {
-      const lastDot = d.id.lastIndexOf(".");
-      return lastDot >= 0 ? d.id.substring(0, lastDot) : null;
+      const id = d.id.trim();
+      const lastDot = id.lastIndexOf(".");
+      return lastDot >= 0 ? id.substring(0, lastDot) : null;
     });
 
-  // Create the hierarchical root object from the CSV data.
   const root = stratify(data);
 
-  // Apply the cluster layout so each node gets x and y coordinates.
+  console.log("Dendrogram root:", root);
+
   clusterLayout(root);
 
-  // Draw the links between parent and child nodes.
+  // Draw links
   dGroup.selectAll(".link")
     .data(root.links())
     .enter()
@@ -52,7 +57,7 @@ d3.csv("flare.csv").then(function(data) {
       .y(d => d.x)
     );
 
-  // Create one group per node.
+  // Draw nodes
   const node = dGroup.selectAll(".node")
     .data(root.descendants())
     .enter()
@@ -60,15 +65,22 @@ d3.csv("flare.csv").then(function(data) {
     .attr("class", "node")
     .attr("transform", d => `translate(${d.y},${d.x})`);
 
-  // Draw a circle for each node.
   node.append("circle")
     .attr("r", 4);
 
-  // Show the node name only, not the full dot-separated path.
-  // Example: Books.Children's Books.Age 3-5.ABCs -> ABCs
   node.append("text")
     .attr("dy", 4)
     .attr("x", d => d.children ? -10 : 10)
     .style("text-anchor", d => d.children ? "end" : "start")
-    .text(d => d.id.substring(d.id.lastIndexOf(".") + 1));
+    .text(d => {
+      const id = d.id.trim();
+      const lastDot = id.lastIndexOf(".");
+      return lastDot >= 0 ? id.substring(lastDot + 1) : id;
+    });
+
+  document.getElementById("statusMessage").textContent = "Visualizations loaded.";
+}).catch(function(error) {
+  console.error("Dendrogram error:", error);
+  document.getElementById("statusMessage").textContent =
+    "Dendrogram failed to load. Check flare.csv formatting in the console.";
 });
