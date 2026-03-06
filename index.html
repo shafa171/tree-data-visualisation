@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book Store Tree Visualizations</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <h1>Book Store Tree Visualizations</h1>
 
+  <div class="controls">
+    <div class="control-group">
+      <label for="graphSelect"><strong>Choose graph:</strong></label>
+      <select id="graphSelect">
+        <option value="dendrogram">Dendrogram</option>
+        <option value="treemap">Treemap</option>
+      </select>
+    </div>
+
+    <div class="control-group" id="treemapControls">
+      <strong>Treemap rectangle size:</strong>
+      <label>
+        <input type="radio" name="metric" value="sold" checked />
+        Number of Books Sold
+      </label>
+      <label>
+        <input type="radio" name="metric" value="revenue" />
+        Revenue
+      </label>
+    </div>
+  </div>
+
+  <div id="dendrogramSection" class="viz-section">
+    <svg id="dendrogramSvg"></svg>
+  </div>
+
+  <div id="treemapSection" class="viz-section hidden">
+    <svg id="treemapSvg"></svg>
+  </div>
+
+  <script src="dendrogram.js"></script>
+  <script src="treemap.js"></script>
+  <script>
+    const graphSelect = document.getElementById("graphSelect");
+    const dendrogramSection = document.getElementById("dendrogramSection");
+    const treemapSection = document.getElementById("treemapSection");
+    const treemapControls = document.getElementById("treemapControls");
+
+    function updateVisibleGraph() {
+      const selected = graphSelect.value;
+
+      if (selected === "dendrogram") {
+        dendrogramSection.classList.remove("hidden");
+        treemapSection.classList.add("hidden");
+        treemapControls.style.display = "none";
+      } else {
+        dendrogramSection.classList.add("hidden");
+        treemapSection.classList.remove("hidden");
+        treemapControls.style.display = "block";
+      }
+    }
+
+    graphSelect.addEventListener("change", updateVisibleGraph);
+    updateVisibleGraph();
+  </script>
+</body>
+</html>
